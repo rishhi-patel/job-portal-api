@@ -6,6 +6,12 @@ const bodyParser = require("body-parser")
 const cors = require("cors")
 const morgan = require("morgan")
 
+const {
+  notFound,
+  errorHandler,
+} = require("./server/middleware/errorMiddleware")
+const connectDB = require("./server/config/db")
+
 const app = express()
 
 app.use(cors())
@@ -16,11 +22,11 @@ app.use("/temp", express.static("uploads"))
 
 if (process.env.NODE_ENV === "development") app.use(morgan("dev"))
 //connect DB
-// connectDB()
-// // route configuration
-// require("./server/routes")(app)
-// app.use(notFound)
-// app.use(errorHandler)
+connectDB()
+// route configuration
+require("./server/routes")(app)
+app.use(notFound)
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000
 app.listen(
