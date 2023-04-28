@@ -143,10 +143,27 @@ const registerAdmin = asyncHandler(async (req, res) => {
   }
 })
 
+// @desc   get candidates
+// @route   GET /api/user/
+// @access  Public
+const getCandidates = asyncHandler(async (req, res) => {
+  const candidates = await User.find({}).sort({
+    createdAt: -1,
+  })
+
+  if (candidates) {
+    createSuccessResponse(res, candidates, 200)
+  } else {
+    res.status(400)
+    throw new Error("candidates Not Found")
+  }
+})
+
 module.exports = {
   loginUser,
   loginAdmin,
   registerAdmin,
   updateUserProfile,
   getUserDetails,
+  getCandidates,
 }

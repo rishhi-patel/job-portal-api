@@ -4,9 +4,9 @@ const userSchema = mongoose.Schema(
   {
     firstName: {
       type: String,
-      default: "",
+      default: "Job Portal",
     },
-    lastName: { type: String, default: "" },
+    lastName: { type: String, default: "User" },
     email: {
       type: String,
       required: true,
