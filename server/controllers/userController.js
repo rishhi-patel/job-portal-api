@@ -145,14 +145,28 @@ const registerAdmin = asyncHandler(async (req, res) => {
 
 // @desc   get candidates
 // @route   GET /api/user/
-// @access  Public
+// @access  Private
 const getCandidates = asyncHandler(async (req, res) => {
-  const candidates = await User.find({}).sort({
+  const candidates = await User.find({ isAdmin: false }).sort({
     createdAt: -1,
   })
 
   if (candidates) {
     createSuccessResponse(res, candidates, 200)
+  } else {
+    res.status(400)
+    throw new Error("candidates Not Found")
+  }
+})
+
+// @desc   get candidates
+// @route   GET /api/user/
+// @access  Private
+const getCandidateById = asyncHandler(async (req, res) => {
+  const { _id } = req.params
+  const candidate = await User.findOne({ _id })
+  if (candidate) {
+    createSuccessResponse(res, candidate, 200)
   } else {
     res.status(400)
     throw new Error("candidates Not Found")
@@ -166,4 +180,6 @@ module.exports = {
   updateUserProfile,
   getUserDetails,
   getCandidates,
+  getCandidateById,
+  getCandidateById,
 }
