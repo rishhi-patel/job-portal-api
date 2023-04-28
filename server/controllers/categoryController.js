@@ -21,7 +21,9 @@ const getCategories = asyncHandler(async (req, res) => {
     : {}
 
   const count = await Category.countDocuments({})
-  const data = await Category.find({ ...keyword })
+  const data = await Category.find({ ...keyword }).sort({
+    createdAt: -1,
+  })
   createSuccessResponse(res, data)
 })
 
@@ -87,7 +89,15 @@ const deleteCategory = asyncHandler(async (req, res) => {
   const result = await Category.findOne({ _id })
   if (result) {
     await result.remove()
-    res.status(200).json({ success: true, message: `Category removed` })
+    const updatedCatrgories = await Category.find({}).sort({
+      createdAt: -1,
+    })
+    createSuccessResponse(
+      res,
+      updatedCatrgories,
+      200,
+      "Category Deleted Successfully"
+    )
   } else {
     res.status(404)
     throw new Error(`No Category found`)

@@ -2,17 +2,16 @@ const mongoose = require("mongoose")
 
 const jobsSchema = mongoose.Schema(
   {
- { type: String, required: true },
-    jobPosition: 'Jr. Dev',
-    jobDescription: 'Frontend Dev',
-    requirement: 'react,redux',
-    industry: 'IT',
-    shifts: 'first',
-    jobLocation: 'india',
-    salary: 'Iei 10000 -  Iei 20000',
-    aboutCompany: 'infotech.ltd',
-    empowering: '',
-    aboutCompany: '',
+    jobPosition: { type: String, required: true },
+    jobDescription: { type: String, required: true },
+    requirement: { type: String, required: true },
+    industry: { type: String, required: true },
+    shifts: { type: String, required: true },
+    jobLocation: { type: String, required: true },
+    minSalary: { type: Number },
+    maxSalary: { type: Number },
+    aboutCompany: { type: String },
+    empowering: { type: String, required: true },
   },
   {
     timestamps: true,
