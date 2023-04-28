@@ -8,7 +8,7 @@ const createSuccessResponse = (res, data, status = 200, message) => {
 const createErrorResponse = (res, message, status = 400) => {
   return res.status(status).send({
     status: "fail",
-    message,
+    ...message,
   })
 }
 

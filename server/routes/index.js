@@ -3,11 +3,7 @@ const router = express.Router()
 // config routers
 require("./userRoutes")(router)
 require("./categoryRoutes")(router)
-// require("./orderRoutes")(router)
-// require("./productRoutes")(router)
-// require("./offerRoutes")(router)
-// require("./blogRoutes")(router)
-// require("./addressRoute")(router)
+require("./jobRoutes")(router)
 
 module.exports = function (app) {
   app.get("/", (req, res) => res.send("API is running...."))

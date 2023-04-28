@@ -47,14 +47,14 @@ const updateJob = expressAsyncHandler(async (req, res) => {
     createSuccessResponse(res, newJob)
   } else {
     res.status(400)
-    throw new Error("Something went wrong")
+    throw new Error(`No Job found`)
   }
 })
 
 // @desc    delete Job
 // @route   DELETE /api/job/:_id
 // @access  Public
-const deleteJob = asyncHandler(async (req, res) => {
+const deleteJob = expressAsyncHandler(async (req, res) => {
   const { _id } = req.params
   const result = await Jobs.findOne({ _id })
   if (result) {
@@ -65,7 +65,7 @@ const deleteJob = asyncHandler(async (req, res) => {
     createSuccessResponse(res, updatedJobs, 200, "Job Deleted Successfully")
   } else {
     res.status(404)
-    throw new Error(`No Category found`)
+    throw new Error(`No Job found`)
   }
 })
 

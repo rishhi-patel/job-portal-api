@@ -11,7 +11,7 @@ const jobsSchema = mongoose.Schema(
     minSalary: { type: Number },
     maxSalary: { type: Number },
     aboutCompany: { type: String },
-    empowering: { type: String, required: true },
+    empowering: { type: String },
   },
   {
     timestamps: true,
