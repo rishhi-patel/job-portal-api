@@ -82,7 +82,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email })
 
-  if (user) {
+  if (user && user.isAdmin) {
     const ismatch = await bcrypt.compare(password, user.password)
     if (ismatch) {
       createSuccessResponse(
