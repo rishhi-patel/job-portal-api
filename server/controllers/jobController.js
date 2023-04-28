@@ -6,7 +6,8 @@ const { createSuccessResponse } = require("../utils/utils")
 // @route   GET /api/job
 // @access  Public
 const getAllJobs = expressAsyncHandler(async (req, res) => {
-  const jobs = await Jobs.find({}).sort({
+  const { type } = req.query
+  const jobs = await Jobs.find({ industry: type }).sort({
     createdAt: -1,
   })
   if (jobs) {
