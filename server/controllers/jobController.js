@@ -71,4 +71,18 @@ const deleteJob = expressAsyncHandler(async (req, res) => {
   }
 })
 
-module.exports = { getAllJobs, createJob, updateJob, deleteJob }
+// @desc    delete Job
+// @route   GET /api/job/:_id
+// @access  Public
+const getJobById = expressAsyncHandler(async (req, res) => {
+  const { _id } = req.params
+  const result = await Jobs.findOne({ _id })
+  if (result) {
+    createSuccessResponse(res, result, 200)
+  } else {
+    res.status(404)
+    throw new Error(`No Job found`)
+  }
+})
+
+module.exports = { getAllJobs, createJob, updateJob, deleteJob, getJobById }
