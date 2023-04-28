@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router()
 // config routers
 require("./userRoutes")(router)
+require("./categoryRoutes")(router)
 // require("./orderRoutes")(router)
 // require("./productRoutes")(router)
 // require("./offerRoutes")(router)
