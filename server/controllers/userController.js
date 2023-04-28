@@ -22,10 +22,15 @@ const loginUser = asyncHandler(async (req, res) => {
     })
   }
   if (existUser) {
-    createSuccessResponse(res, {
-      token: generateToken(existUser._id),
-      user: existUser,
-    })
+    createSuccessResponse(
+      res,
+      {
+        token: generateToken(existUser._id),
+        user: existUser,
+      },
+      200,
+      "Login Success"
+    )
   } else {
     res.status(400)
     throw new Error("Something went wrong")
@@ -53,14 +58,6 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   const { _id } = req.user
   const existUser = await User.findOne({ _id })
 
-  if (!existUser) {
-    // create new user if not found
-    existUser = await User.create({
-      email,
-      firstName,
-      lastName,
-    })
-  }
   if (existUser) {
     const updatedUser = await User.findOneAndUpdate(
       {
@@ -70,7 +67,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       { ...req.body },
       { new: true }
     )
-    createSuccessResponse(res, updatedUser)
+    createSuccessResponse(res, updatedUser, 200, "User Details Updated")
   } else {
     res.status(400)
     throw new Error("User Not Found")
@@ -88,10 +85,15 @@ const loginAdmin = asyncHandler(async (req, res) => {
   if (user) {
     const ismatch = await bcrypt.compare(password, user.password)
     if (ismatch) {
-      createSuccessResponse(res, {
-        token: generateToken(user._id),
-        user: user,
-      })
+      createSuccessResponse(
+        res,
+        {
+          token: generateToken(user._id),
+          user: user,
+        },
+        200,
+        "Login Success"
+      )
     } else {
       res.status(401)
       throw new Error("invalid password")
@@ -125,8 +127,15 @@ const registerAdmin = asyncHandler(async (req, res) => {
     })
 
     if (newUser) {
-      const accessToken = generateToken(newUser._id)
-      createSuccessResponse(res, { accessToken })
+      createSuccessResponse(
+        res,
+        {
+          token: generateToken(newUser._id),
+          user: newUser,
+        },
+        200,
+        "Login Success"
+      )
     } else {
       res.status(400)
       throw new Error("Something went Wrong")

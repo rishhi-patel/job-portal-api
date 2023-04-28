@@ -7,7 +7,8 @@ const { createSuccessResponse } = require("../utils/utils")
 // @access  Public
 const getAllJobs = expressAsyncHandler(async (req, res) => {
   const { type } = req.query
-  const jobs = await Jobs.find({ industry: type }).sort({
+  const keyword = type ? { industry: type } : {}
+  const jobs = await Jobs.find({ ...keyword }).sort({
     createdAt: -1,
   })
   if (jobs) {
@@ -24,7 +25,7 @@ const getAllJobs = expressAsyncHandler(async (req, res) => {
 const createJob = expressAsyncHandler(async (req, res) => {
   const newJob = await Jobs.create({ ...req.body })
   if (newJob) {
-    createSuccessResponse(res, newJob)
+    createSuccessResponse(res, newJob, 201, "Job Created")
   } else {
     res.status(400)
     throw new Error("Something went wrong")
@@ -45,7 +46,7 @@ const updateJob = expressAsyncHandler(async (req, res) => {
     { new: true }
   )
   if (newJob) {
-    createSuccessResponse(res, newJob)
+    createSuccessResponse(res, newJob, 200, "Job Updated")
   } else {
     res.status(400)
     throw new Error(`No Job found`)

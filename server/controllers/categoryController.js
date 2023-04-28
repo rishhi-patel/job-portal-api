@@ -47,7 +47,7 @@ const createCategory = asyncHandler(async (req, res) => {
         image: result,
       })
       const createdCategory = await newCategory.save()
-      createSuccessResponse(res, createdCategory, 201)
+      createSuccessResponse(res, createdCategory, 201, "Category Created")
     } else {
       res.status(400)
       throw new Error(`Image is required`)
@@ -71,10 +71,15 @@ const updateCategory = asyncHandler(async (req, res) => {
       const img = await awsService.uploadFile(req)
       result.image = img
     }
+    const checkDuplicate = await Category.findOne({ name })
+    if (checkDuplicate) {
+      res.status(400)
+      throw new Error(`Category already exist`)
+    }
     result.name = name
     await result.save()
     // res.status(200).json(result)
-    createSuccessResponse(res, result, 200)
+    createSuccessResponse(res, result, 200, "Category Updated")
   } else {
     res.status(404)
     throw new Error(`No Category found`)
