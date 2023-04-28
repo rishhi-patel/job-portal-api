@@ -4,8 +4,9 @@ const userSchema = mongoose.Schema(
   {
     firstName: {
       type: String,
+      default: "",
     },
-    lastName: { type: String },
+    lastName: { type: String, default: "" },
     email: {
       type: String,
       required: true,
@@ -16,6 +17,34 @@ const userSchema = mongoose.Schema(
     isAdmin: {
       type: Boolean,
       default: false,
+    },
+    nationality: {
+      type: String,
+      default: "",
+    },
+    phoneNumber1: {
+      type: String,
+      default: "",
+    },
+    phoneNumber2: {
+      type: String,
+      default: "",
+    },
+    passportNo: {
+      type: String,
+      default: "",
+    },
+    currentEmployer: {
+      type: String,
+      default: "",
+    },
+    profession: {
+      type: String,
+      default: "",
+    },
+    residenceCardExpiryDate: {
+      type: String,
+      default: "",
     },
   },
   {

@@ -32,6 +32,51 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 })
 
+// @desc    auth user
+// @route   GET /api/user/profile
+// @access  Protected
+const getUserDetails = asyncHandler(async (req, res) => {
+  const { _id } = req.user
+  const user = await User.findById(_id)
+  if (user) {
+    createSuccessResponse(res, user)
+  } else {
+    res.status(400)
+    throw new Error("User Not Found")
+  }
+})
+
+// @desc    auth user
+// @route   POST /api/user/profile
+// @access  Protected
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const { _id } = req.user
+  const existUser = await User.findOne({ _id })
+
+  if (!existUser) {
+    // create new user if not found
+    existUser = await User.create({
+      email,
+      firstName,
+      lastName,
+    })
+  }
+  if (existUser) {
+    const updatedUser = await User.findOneAndUpdate(
+      {
+        _id,
+      },
+
+      { ...req.body },
+      { new: true }
+    )
+    createSuccessResponse(res, updatedUser)
+  } else {
+    res.status(400)
+    throw new Error("User Not Found")
+  }
+})
+
 // @desc   auth user
 // @route   POST /api/user/admin/login
 // @access  Public
@@ -89,4 +134,10 @@ const registerAdmin = asyncHandler(async (req, res) => {
   }
 })
 
-module.exports = { loginUser, loginAdmin, registerAdmin }
+module.exports = {
+  loginUser,
+  loginAdmin,
+  registerAdmin,
+  updateUserProfile,
+  getUserDetails,
+}
