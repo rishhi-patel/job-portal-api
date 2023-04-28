@@ -181,5 +181,4 @@ module.exports = {
   getUserDetails,
   getCandidates,
   getCandidateById,
-  getCandidateById,
 }
