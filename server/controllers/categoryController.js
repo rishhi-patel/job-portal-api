@@ -72,14 +72,19 @@ const updateCategory = asyncHandler(async (req, res) => {
       result.image = img
     }
     const checkDuplicate = await Category.findOne({ name })
-    if (checkDuplicate) {
+    if (
+      checkDuplicate &&
+      !Boolean(checkDuplicate._id.toString() === _id.toString())
+    ) {
       res.status(400)
       throw new Error(`Category already exist`)
     }
     result.name = name
     await result.save()
-    // res.status(200).json(result)
-    createSuccessResponse(res, result, 200, "Category Updated")
+    const data = await Category.find({}).sort({
+      createdAt: -1,
+    })
+    createSuccessResponse(res, data, 200, "Category Updated")
   } else {
     res.status(404)
     throw new Error(`No Category found`)
