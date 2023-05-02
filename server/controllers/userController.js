@@ -190,7 +190,7 @@ const sendOTP = asyncHandler(async (req, res) => {
     createSuccessResponse(res, otp, 200, "OTP sent  ")
   } else {
     res.status(401)
-    throw new Error("Email Is Nnot Registered")
+    throw new Error("Email Not Registered")
   }
 })
 
