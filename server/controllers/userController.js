@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs")
 const { createSuccessResponse } = require("../utils/utils")
 const generateToken = require("../utils/generateToken")
 const User = require("../models/userModel")
+const jwt = require("jsonwebtoken")
 const saltRounds = 10
 
 // @desc    auth user
@@ -173,6 +174,77 @@ const getCandidateById = asyncHandler(async (req, res) => {
   }
 })
 
+// @desc    Auth user & get OTP
+// @route   POST /api/user/admin/generate-otp
+// @access  Public
+const sendOTP = asyncHandler(async (req, res) => {
+  const { email } = req.body
+
+  let existUser = null
+  const otp = 987654
+  existUser = await User.findOne({ email })
+  if (existUser) {
+    existUser.otp = otp
+    await existUser.save()
+    createSuccessResponse(res, otp, 200, "OTP sent successfully")
+  } else {
+    res.status(401)
+    throw new Error("Email Is Nnot Registered")
+  }
+})
+
+// @desc    verify OTP
+// @route   POST /api/user/admin/verify-otp
+// @access  Public
+const verifyOTP = asyncHandler(async (req, res) => {
+  const { email, otp } = req.body
+  const existUser = await User.findOne({ email }).select(["-password"])
+  const expiresIn = 12000
+
+  if (existUser && existUser.otp === otp) {
+    existUser.otp = null
+    await existUser.save()
+    createSuccessResponse(
+      res,
+      {
+        token: generateToken(existUser._id, expiresIn),
+      },
+      200,
+      "OTP verified Successfully"
+    )
+  } else {
+    res.status(400)
+    throw new Error("Invalid OTP")
+  }
+})
+
+// @desc   resetUserDetails
+// @route   POST /api/user/admin/reset-password
+// @access  public
+const resetUserPassword = asyncHandler(async (req, res) => {
+  const { token } = req.params
+  const { password } = req.body
+
+  const decoded = jwt.verify(token, process.env.JWT_SECRET)
+  const user = await User.findById(decoded.id)
+  const salt = await bcrypt.genSalt(saltRounds)
+  const passwordHash = await bcrypt.hash(password, salt)
+
+  if (decoded && decoded.id) {
+    if (user) {
+      user.password = passwordHash
+      await user.save()
+      createSuccessResponse(res, {}, 200, "Password changed successfully")
+    } else {
+      res.status(400)
+      throw new Error("user either blocked or not available")
+    }
+  } else {
+    res.status(401)
+    throw new Error("Token Expired")
+  }
+})
+
 module.exports = {
   loginUser,
   loginAdmin,
@@ -181,4 +253,7 @@ module.exports = {
   getUserDetails,
   getCandidates,
   getCandidateById,
+  sendOTP,
+  verifyOTP,
+  resetUserPassword,
 }

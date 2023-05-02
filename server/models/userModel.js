@@ -50,6 +50,10 @@ const userSchema = mongoose.Schema(
       type: String,
       default: "",
     },
+    otp: {
+      type: Number,
+      default: null,
+    },
   },
   {
     timestamps: true,

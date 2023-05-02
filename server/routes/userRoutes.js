@@ -6,6 +6,9 @@ const {
   getUserDetails,
   getCandidates,
   getCandidateById,
+  sendOTP,
+  verifyOTP,
+  resetUserPassword,
 } = require("../controllers/userController")
 
 const { protect } = require("../middleware/authMiddleware")
@@ -15,7 +18,9 @@ module.exports = (router) => {
   router.route("/user/admin/register").post(registerAdmin)
   router.route("/user/admin/login").post(loginAdmin)
   router.route("/user/login").post(loginUser)
-  //   router.route("/user/password/:token").post(resetUserPassword)
+  router.route("/user/admin/otp").post(sendOTP)
+  router.route("/user/admin/verify-otp").post(verifyOTP)
+  router.route("/user/admin/password/:token").post(resetUserPassword)
 
   // private Routes
   router
