@@ -38,19 +38,26 @@ const createCategory = asyncHandler(async (req, res) => {
     res.status(400)
     throw new Error(`Category already exist`)
   } else {
-    if (req.file) {
-      const newBuffer = await sharp(req.file.buffer).resize(255, 150).toBuffer()
-      req.file.buffer = newBuffer
-      const result = await awsService.uploadFile(req)
-      const newCategory = new Category({
-        name,
-        image: result,
-      })
-      const createdCategory = await newCategory.save()
-      createSuccessResponse(res, createdCategory, 201, "Category Created")
+    if (name) {
+      if (req.file) {
+        const newBuffer = await sharp(req.file.buffer)
+          .resize(255, 150)
+          .toBuffer()
+        req.file.buffer = newBuffer
+        const result = await awsService.uploadFile(req)
+        const newCategory = new Category({
+          name,
+          image: result,
+        })
+        const createdCategory = await newCategory.save()
+        createSuccessResponse(res, createdCategory, 201, "Category Created")
+      } else {
+        res.status(400)
+        throw new Error(`Image is required`)
+      }
     } else {
       res.status(400)
-      throw new Error(`Image is required`)
+      throw new Error(`Name is required`)
     }
     // const presigned = await awsService.getPreSignedURL(result.Key)
   }
@@ -65,26 +72,33 @@ const updateCategory = asyncHandler(async (req, res) => {
 
   const result = await Category.findById({ _id })
   if (result) {
-    if (req.file) {
-      const newBuffer = await sharp(req.file.buffer).resize(320, 240).toBuffer()
-      req.file.buffer = newBuffer
-      const img = await awsService.uploadFile(req)
-      result.image = img
+    if (name) {
+      if (req.file) {
+        const newBuffer = await sharp(req.file.buffer)
+          .resize(320, 240)
+          .toBuffer()
+        req.file.buffer = newBuffer
+        const img = await awsService.uploadFile(req)
+        result.image = img
+      }
+      const checkDuplicate = await Category.findOne({ name })
+      if (
+        checkDuplicate &&
+        !Boolean(checkDuplicate._id.toString() === _id.toString())
+      ) {
+        res.status(400)
+        throw new Error(`Category already exist`)
+      }
+      result.name = name
+      await result.save()
+      const data = await Category.find({}).sort({
+        createdAt: -1,
+      })
+      createSuccessResponse(res, data, 200, "Category Updated")
+    } else {
+      res.status(404)
+      throw new Error(`Name is Required`)
     }
-    const checkDuplicate = await Category.findOne({ name })
-    if (
-      checkDuplicate &&
-      !Boolean(checkDuplicate._id.toString() === _id.toString())
-    ) {
-      res.status(400)
-      throw new Error(`Category already exist`)
-    }
-    result.name = name
-    await result.save()
-    const data = await Category.find({}).sort({
-      createdAt: -1,
-    })
-    createSuccessResponse(res, data, 200, "Category Updated")
   } else {
     res.status(404)
     throw new Error(`No Category found`)
@@ -102,12 +116,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
     const updatedCatrgories = await Category.find({}).sort({
       createdAt: -1,
     })
-    createSuccessResponse(
-      res,
-      updatedCatrgories,
-      200,
-      "Category Deleted Successfully"
-    )
+    createSuccessResponse(res, updatedCatrgories, 200, "Category Deleted  ")
   } else {
     res.status(404)
     throw new Error(`No Category found`)

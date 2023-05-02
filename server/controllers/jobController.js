@@ -64,7 +64,7 @@ const deleteJob = expressAsyncHandler(async (req, res) => {
     const updatedJobs = await Jobs.find({}).sort({
       createdAt: -1,
     })
-    createSuccessResponse(res, updatedJobs, 200, "Job Deleted Successfully")
+    createSuccessResponse(res, updatedJobs, 200, "Job Deleted  ")
   } else {
     res.status(404)
     throw new Error(`No Job found`)

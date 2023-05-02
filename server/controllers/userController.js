@@ -186,7 +186,7 @@ const sendOTP = asyncHandler(async (req, res) => {
   if (existUser) {
     existUser.otp = otp
     await existUser.save()
-    createSuccessResponse(res, otp, 200, "OTP sent successfully")
+    createSuccessResponse(res, otp, 200, "OTP sent  ")
   } else {
     res.status(401)
     throw new Error("Email Is Nnot Registered")
@@ -210,7 +210,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
         token: generateToken(existUser._id, expiresIn),
       },
       200,
-      "OTP verified Successfully"
+      "OTP verified  "
     )
   } else {
     res.status(400)
@@ -234,7 +234,7 @@ const resetUserPassword = asyncHandler(async (req, res) => {
     if (user) {
       user.password = passwordHash
       await user.save()
-      createSuccessResponse(res, {}, 200, "Password changed successfully")
+      createSuccessResponse(res, {}, 200, "Password changed  ")
     } else {
       res.status(400)
       throw new Error("user either blocked or not available")
