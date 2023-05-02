@@ -65,9 +65,10 @@ const updateUserProfile = asyncHandler(async (req, res) => {
         _id,
       },
 
-      { ...req.body },
+      { ...req.body, profileCompleted: true },
       { new: true }
     )
+    console.log({ updatedUser })
     createSuccessResponse(res, updatedUser, 200, "User Details Updated")
   } else {
     res.status(400)
