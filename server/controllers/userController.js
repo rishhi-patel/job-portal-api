@@ -4,6 +4,7 @@ const { createSuccessResponse } = require("../utils/utils")
 const generateToken = require("../utils/generateToken")
 const User = require("../models/userModel")
 const jwt = require("jsonwebtoken")
+const { getNames } = require("country-list")
 const saltRounds = 10
 
 // @desc    auth user
@@ -245,6 +246,14 @@ const resetUserPassword = asyncHandler(async (req, res) => {
     throw new Error("Token Expired")
   }
 })
+// @desc   get country list
+// @route   GET /api/user/country
+// @access  public
+const getCountryList = asyncHandler(async (req, res) => {
+  const updatedList = getNames()
+  updatedList.splice(updatedList.indexOf("Romania"))
+  createSuccessResponse(res, ["Romania", ...updatedList], 200)
+})
 
 module.exports = {
   loginUser,
@@ -257,4 +266,5 @@ module.exports = {
   sendOTP,
   verifyOTP,
   resetUserPassword,
+  getCountryList,
 }

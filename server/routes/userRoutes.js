@@ -9,6 +9,7 @@ const {
   sendOTP,
   verifyOTP,
   resetUserPassword,
+  getCountryList,
 } = require("../controllers/userController")
 
 const { protect } = require("../middleware/authMiddleware")
@@ -21,6 +22,7 @@ module.exports = (router) => {
   router.route("/user/admin/otp").post(sendOTP)
   router.route("/user/admin/verify-otp").post(verifyOTP)
   router.route("/user/admin/password/:token").post(resetUserPassword)
+  router.route("/user/country").get(getCountryList)
 
   // private Routes
   router
