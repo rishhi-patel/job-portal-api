@@ -41,7 +41,7 @@ const createCategory = asyncHandler(async (req, res) => {
     if (name) {
       if (req.file) {
         const newBuffer = await sharp(req.file.buffer)
-          .resize(255, 150)
+          .resize({ width: 255, height: 150, fit: "fill" })
           .toBuffer()
         req.file.buffer = newBuffer
         const result = await awsService.uploadFile(req)
@@ -75,7 +75,7 @@ const updateCategory = asyncHandler(async (req, res) => {
     if (name) {
       if (req.file) {
         const newBuffer = await sharp(req.file.buffer)
-          .resize(320, 240)
+          .resize({ width: 255, height: 150, fit: "fill" })
           .toBuffer()
         req.file.buffer = newBuffer
         const img = await awsService.uploadFile(req)

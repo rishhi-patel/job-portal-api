@@ -1,12 +1,12 @@
 const mongoose = require("mongoose")
 
-const userSchema = mongoose.Schema(
+const discardedUser = mongoose.Schema(
   {
     firstName: {
       type: String,
       default: "Job Portal",
     },
-    lastName: { type: String, default: "User" },
+    lastName: { type: String, default: "discardedUser" },
     email: {
       type: String,
       required: true,
@@ -68,6 +68,6 @@ const userSchema = mongoose.Schema(
   }
 )
 
-const User = mongoose.model("User", userSchema)
+const DiscardedUser = mongoose.model("discardedUser", discardedUser)
 
-module.exports = User
+module.exports = DiscardedUser

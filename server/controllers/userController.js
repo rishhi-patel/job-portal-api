@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs")
 const { createSuccessResponse } = require("../utils/utils")
 const generateToken = require("../utils/generateToken")
 const User = require("../models/userModel")
+const DiscardedUser = require("../models/discardedUserModal")
 const jwt = require("jsonwebtoken")
 const { getNames } = require("country-list")
 const saltRounds = 10
@@ -23,7 +24,7 @@ const loginUser = asyncHandler(async (req, res) => {
       lastName,
     })
   }
-  if (existUser) {
+  if (existUser && !existUser.isBlocked) {
     createSuccessResponse(
       res,
       {
@@ -35,7 +36,7 @@ const loginUser = asyncHandler(async (req, res) => {
     )
   } else {
     res.status(400)
-    throw new Error("Something went wrong")
+    throw new Error("User Blocked")
   }
 })
 
@@ -255,6 +256,69 @@ const getCountryList = asyncHandler(async (req, res) => {
   createSuccessResponse(res, ["Romania", ...updatedList], 200)
 })
 
+// @desc  update candidate
+// @route   UPDATE /api/candidate/:_ic
+// @access  public
+const updateCandidateDetails = asyncHandler(async (req, res) => {
+  const { _id } = req.params
+  const existUser = await User.findOne({ _id })
+
+  if (existUser) {
+    const updatedUser = await User.findOneAndUpdate(
+      {
+        _id,
+      },
+      { ...req.body },
+      { new: true }
+    )
+    createSuccessResponse(res, updatedUser, 200, "Candidate Details Updated")
+  } else {
+    res.status(400)
+    throw new Error("User Not Found")
+  }
+})
+
+// @desc  update candidate
+// @route   PATCH /api/candidate/:_ic
+// @access  public
+const blockUnBlockCandidate = asyncHandler(async (req, res) => {
+  const { _id } = req.params
+  const { isBlocked } = req.body
+  const existUser = await User.findOne({ _id })
+
+  if (existUser) {
+    const updatedUser = await User.findOneAndUpdate(
+      {
+        _id,
+      },
+      { isBlocked },
+      { new: true }
+    )
+    createSuccessResponse(res, updatedUser, 200, "Candidate Details Updated")
+  } else {
+    res.status(400)
+    throw new Error("User Not Found")
+  }
+})
+
+// @desc  delete account
+// @route   DELETE /api/user
+// @access  private
+const deleteUserAccount = asyncHandler(async (req, res) => {
+  const { _id } = req.user
+  const existUser = await User.findOne({ _id }).lean()
+
+  if (existUser) {
+    // move user to discarded
+    await DiscardedUser.create({ ...existUser })
+    await User.findOneAndDelete({ _id })
+    createSuccessResponse(res, null, 200, "Account Deleted")
+  } else {
+    res.status(400)
+    throw new Error("User Not Found")
+  }
+})
+
 module.exports = {
   loginUser,
   loginAdmin,
@@ -267,4 +331,7 @@ module.exports = {
   verifyOTP,
   resetUserPassword,
   getCountryList,
+  updateCandidateDetails,
+  blockUnBlockCandidate,
+  deleteUserAccount,
 }
