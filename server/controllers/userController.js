@@ -294,10 +294,12 @@ const blockUnBlockCandidate = asyncHandler(async (req, res) => {
       { isBlocked },
       { new: true }
     )
-    createSuccessResponse(res, updatedUser, 200, "Candidate Details Updated")
+    if (isBlocked)
+      createSuccessResponse(res, updatedUser, 200, "Candidate Blocked")
+    else createSuccessResponse(res, updatedUser, 200, "Candidate Unblocked")
   } else {
     res.status(400)
-    throw new Error("User Not Found")
+    throw new Error("Candidate Not Found")
   }
 })
 
