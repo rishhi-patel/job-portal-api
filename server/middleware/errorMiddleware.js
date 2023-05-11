@@ -7,12 +7,15 @@ const notFound = (req, res, next) => {
 }
 
 const errorHandler = (err, req, res, next) => {
-  const statusCode = res.statusCode === 200 ? 500 : res.statusCode
-  res.status(statusCode)
-  createErrorResponse(res, {
-    message: err.message,
-    stack: process.env.NODE_ENV === "production" ? null : err.stack,
-  })
+  createErrorResponse(
+    res,
+    {
+      message: err.message,
+      stack: process.env.NODE_ENV === "production" ? null : err.stack,
+    },
+    res.statusCode
+  )
+  next()
 }
 
 module.exports = { notFound, errorHandler }
