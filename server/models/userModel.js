@@ -1,4 +1,4 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema(
   {
@@ -58,6 +58,10 @@ const userSchema = mongoose.Schema(
       type: Number,
       default: null,
     },
+    otp_verified: {
+      type: Boolean,
+      default: false,
+    },
     profileCompleted: {
       type: Boolean,
       default: false,
@@ -66,8 +70,8 @@ const userSchema = mongoose.Schema(
   {
     timestamps: true,
   }
-)
+);
 
-const User = mongoose.model("User", userSchema)
+const User = mongoose.model("User", userSchema);
 
-module.exports = User
+module.exports = User;
