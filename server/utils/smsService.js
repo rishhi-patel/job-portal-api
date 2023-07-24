@@ -1,17 +1,15 @@
 require("dotenv").config()
-const msg91 = require("msg91-api")(process.env.MSG91_APIKEY)
-msg91.setOtpExpiry(5)
-msg91.setOtpLength(6)
+const client = require("twilio")(process.env.ACCOUNTSID, process.env.AUTHTOKEN)
 
 const smsService = {
   sendOtpToMobile: async (mobileNo, otp) => {
-    // otp = 987654
     const args = {
-      flow_id: process.env.MSG91_TEMPLATE,
-      mobiles: "91" + mobileNo,
-      var: otp,
+      body: `Your OTP for login to Jenny Point is ${otp} Please do not share this OTP.Thank you.`,
+      from: "+14067408483",
+      to: `+91${mobileNo}`,
     }
-    return await msg91.sendSMS(args)
+    const res = await client.messages.create(args)
+    return res
   },
 
   generateOTP: () => Math.floor(100000 + Math.random() * 900000) || 987654,
