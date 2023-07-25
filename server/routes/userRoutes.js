@@ -28,7 +28,7 @@ module.exports = (router) => {
   router.route("/user/admin/verify-otp").post(verifyOTP);
   router.route("/user/admin/password/:token").post(resetUserPassword);
   router.route("/user/country").get(getCountryList);
-  router.route("/user/generate-otp/:_id").put(sendProfileOTP);
+  router.route("/user/generate-otp/:_id").post(sendProfileOTP);
   router.route("/user/verify-otp").post(protect, verifyProfileOTP);
   // private Routes
   router
