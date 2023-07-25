@@ -77,7 +77,8 @@ const userSchema = mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
+  { strict: "throw" }
 );
 
 const User = mongoose.model("User", userSchema);
