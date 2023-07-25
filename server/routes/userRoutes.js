@@ -22,12 +22,12 @@ module.exports = (router) => {
   router.route("/user/admin/register").post(registerAdmin)
   router.route("/user/admin/login").post(loginAdmin)
   router.route("/user/login").post(loginUser)
-  router.route("/user/admin/otp").post(sendOTP)
-  router.route("/user/admin/verify-otp").post(verifyOTP)
   router.route("/user/admin/password/:token").post(resetUserPassword)
   router.route("/user/country").get(getCountryList)
 
   // private Routes
+  router.route("/user/profile/otp").post(protect, sendOTP)
+  router.route("/user/profile/verify-otp").post(protect, verifyOTP)
   router
     .route("/user/profile")
     .get(protect, getUserDetails)

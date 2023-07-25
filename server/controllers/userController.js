@@ -6,6 +6,7 @@ const User = require("../models/userModel")
 const DiscardedUser = require("../models/discardedUserModal")
 const jwt = require("jsonwebtoken")
 const { getNames } = require("country-list")
+const { sendOtpToMobile } = require("../utils/smsService")
 const saltRounds = 10
 
 // @desc    auth user
@@ -181,12 +182,14 @@ const getCandidateById = asyncHandler(async (req, res) => {
 // @route   POST /api/user/admin/generate-otp
 // @access  Public
 const sendOTP = asyncHandler(async (req, res) => {
-  const { email } = req.body
+  const { _id } = req.user
+  const { phoneNumber } = req.body
 
   let existUser = null
   const otp = 987654
-  existUser = await User.findOne({ email })
+  existUser = await User.findOne({ _id })
   if (existUser) {
+    sendOtpToMobile(phoneNumber, otp)
     existUser.otp = otp
     await existUser.save()
     createSuccessResponse(res, otp, 200, "OTP sent  ")
@@ -200,12 +203,14 @@ const sendOTP = asyncHandler(async (req, res) => {
 // @route   POST /api/user/admin/verify-otp
 // @access  Public
 const verifyOTP = asyncHandler(async (req, res) => {
-  const { email, otp } = req.body
-  const existUser = await User.findOne({ email }).select(["-password"])
+  const { _id } = req.user
+  const { otp, phoneNumber } = req.body
+  const existUser = await User.findOne({ _id }).select(["-password"])
   const expiresIn = 12000
 
   if (existUser && existUser.otp === otp) {
     existUser.otp = null
+    existUser.phoneNumber1 = phoneNumber
     await existUser.save()
     createSuccessResponse(
       res,
