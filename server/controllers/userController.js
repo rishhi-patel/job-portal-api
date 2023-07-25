@@ -1,6 +1,9 @@
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
-const { createSuccessResponse } = require("../utils/utils");
+const {
+  createSuccessResponse,
+  createErrorResponse,
+} = require("../utils/utils");
 const generateToken = require("../utils/generateToken");
 const User = require("../models/userModel");
 const DiscardedUser = require("../models/discardedUserModal");
@@ -332,21 +335,21 @@ const sendProfileOTP = asyncHandler(async (req, res) => {
   let existUser = null;
   const otp = smsService.generateOTP();
   existUser = await User.findOne({ _id });
-  if (existUser) {
+  let phoneexistUser = await User.findOne({ phoneNumber1 });
+  if (phoneexistUser) {
+    createErrorResponse(res, "This number already use", 400);
+  } else if (!phoneexistUser && existUser) {
     await smsService.sendOtpToMobile(phoneNumber1, otp);
     existUser.otp = otp;
     const updatedUser = await User.findOneAndUpdate(
       {
         _id,
       },
-      { otp },
+      { otp, temp_mobile: phoneNumber1, temp_verified: true },
       { new: true }
     );
     await existUser.save();
     createSuccessResponse(res, updatedUser, 200, "otp sent successfully");
-  } else {
-    res.status(401);
-    throw new Error("mobile number not registerd");
   }
 });
 
@@ -358,14 +361,12 @@ const verifyProfileOTP = asyncHandler(async (req, res) => {
   const { email } = req.user;
   const { phoneNumber1, otp } = req.body;
   const existUser = await User.findOne({ email });
-  const ismobileNumber = await User.findOne({ phoneNumber1 });
-  if (ismobileNumber) {
-    res.status(400);
-    throw new Error("number already register");
-  }
   if (existUser && existUser.otp === otp) {
     existUser.otp = null;
     existUser.otp_verified = true;
+    existUser.temp_mobile = false;
+    existUser.temp_verified = false;
+    existUser.phoneNumber1 = phoneNumber1;
     await existUser.save();
     createSuccessResponse(res, "", 200, "OTP verified ");
   } else {

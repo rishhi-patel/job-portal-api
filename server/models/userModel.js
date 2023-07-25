@@ -66,6 +66,14 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    temp_mobile: {
+      type: String,
+      default: null,
+    },
+    temp_verified: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
