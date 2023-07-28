@@ -7,7 +7,7 @@ const smsService = {
       var args = {
         from: "+14067408483",
         to: `+91 ${mobileNo}`,
-        body: `Your OTP for login to Job Portal App is ${otp} Please do not share this OTP.Thank you.`,
+        body: `Your OTP for login to Jenny Point is ${otp} Please do not share this OTP.Thank you.`,
       }
 
       const res = await client.messages.create(args)
