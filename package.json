@@ -36,7 +36,6 @@
     "nodemon": "^2.0.20",
     "razorpay": "^0.0.0",
     "sharp": "^0.31.3",
-    "twilio": "^4.14.0",
     "unique-names-generator": "^4.7.1"
   }
 }
