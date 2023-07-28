@@ -6,7 +6,7 @@ const User = require("../models/userModel")
 const DiscardedUser = require("../models/discardedUserModal")
 const jwt = require("jsonwebtoken")
 const { getNames } = require("country-list")
-// const { sendOtpToMobile } = require("../utils/smsService")
+const { sendOtpToMobile } = require("../utils/smsService")
 const saltRounds = 10
 
 // @desc    auth user
@@ -189,7 +189,7 @@ const sendOTP = asyncHandler(async (req, res) => {
   const otp = 987654
   existUser = await User.findOne({ _id })
   if (existUser) {
-    // sendOtpToMobile(phoneNumber, otp)
+    sendOtpToMobile(phoneNumber, otp)
     existUser.otp = otp
     await existUser.save()
     createSuccessResponse(res, otp, 200, "OTP sent  ")
