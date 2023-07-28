@@ -1,11 +1,8 @@
 require("dotenv").config()
+const client = require("twilio")(process.env.ACCOUNTSID, process.env.AUTHTOKEN)
 
 const smsService = {
   sendOtpToMobile: async (mobileNo, otp) => {
-    const client = require("twilio")(
-      process.env.ACCOUNTSID,
-      process.env.AUTHTOKEN
-    )
     try {
       var args = {
         from: "+14067408483",
