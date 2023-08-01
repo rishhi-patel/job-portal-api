@@ -1,4 +1,4 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema(
   {
@@ -62,12 +62,20 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    temp_mobile: {
+      type: String,
+      default: null,
+    },
+    temp_verified: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
   }
-)
+);
 
-const User = mongoose.model("User", userSchema)
+const User = mongoose.model("User", userSchema);
 
-module.exports = User
+module.exports = User;
