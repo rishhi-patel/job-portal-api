@@ -1,13 +1,13 @@
 const asyncHandler = require("express-async-handler")
 const bcrypt = require("bcryptjs")
-const jwt = require("jsonwebtoken")
-const { getNames } = require("country-list")
-const { createSuccessResponse } = require("../utils/utils")
+const { createSuccessResponse, createErrorResponse } = require("../utils/utils")
 const generateToken = require("../utils/generateToken")
 const User = require("../models/userModel")
 const DiscardedUser = require("../models/discardedUserModal")
+const jwt = require("jsonwebtoken")
+const { getNames } = require("country-list")
+const { sendOtpToMobile } = require("../utils/smsService")
 const smsService = require("../utils/smsService")
-
 const saltRounds = 10
 
 // @desc    auth user
@@ -72,6 +72,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       { ...req.body, profileCompleted: true },
       { new: true }
     )
+    console.log({ updatedUser })
     createSuccessResponse(res, updatedUser, 200, "User Details Updated")
   } else {
     res.status(400)
@@ -182,18 +183,26 @@ const getCandidateById = asyncHandler(async (req, res) => {
 // @route   POST /api/user/admin/generate-otp
 // @access  Public
 const sendOTP = asyncHandler(async (req, res) => {
-  const { email } = req.body
-
+  const { _id } = req.user
+  const { phoneNumber1 } = req.body
   let existUser = null
-  const otp = 987654
-  existUser = await User.findOne({ email })
-  if (existUser) {
+  const otp = smsService.generateOTP()
+  existUser = await User.findOne({ _id })
+  let phoneexistUser = await User.findOne({ phoneNumber1 })
+  if (phoneexistUser) {
+    createErrorResponse(res, "This number already use", 400)
+  } else if (!phoneexistUser && existUser) {
+    await smsService.sendOtpToMobile(phoneNumber1, otp)
     existUser.otp = otp
+    const updatedUser = await User.findOneAndUpdate(
+      {
+        _id,
+      },
+      { otp, temp_mobile: phoneNumber1, temp_verified: true },
+      { new: true }
+    )
     await existUser.save()
-    createSuccessResponse(res, otp, 200, "OTP sent  ")
-  } else {
-    res.status(401)
-    throw new Error("Email Not Registered")
+    createSuccessResponse(res, updatedUser, 200, "otp sent successfully")
   }
 })
 
@@ -201,21 +210,17 @@ const sendOTP = asyncHandler(async (req, res) => {
 // @route   POST /api/user/admin/verify-otp
 // @access  Public
 const verifyOTP = asyncHandler(async (req, res) => {
-  const { email, otp } = req.body
-  const existUser = await User.findOne({ email }).select(["-password"])
-  const expiresIn = 12000
-
+  const { email } = req.user
+  const { phoneNumber1, otp } = req.body
+  const existUser = await User.findOne({ email })
   if (existUser && existUser.otp === otp) {
     existUser.otp = null
+    existUser.otp_verified = true
+    existUser.temp_mobile = false
+    existUser.temp_verified = false
+    existUser.phoneNumber1 = phoneNumber1
     await existUser.save()
-    createSuccessResponse(
-      res,
-      {
-        token: generateToken(existUser._id, expiresIn),
-      },
-      200,
-      "OTP verified  "
-    )
+    createSuccessResponse(res, "", 200, "OTP verified ")
   } else {
     res.status(400)
     throw new Error("Invalid OTP")
@@ -295,9 +300,9 @@ const blockUnBlockCandidate = asyncHandler(async (req, res) => {
       { isBlocked },
       { new: true }
     )
-    if (isBlocked) {
+    if (isBlocked)
       createSuccessResponse(res, updatedUser, 200, "Candidate Blocked")
-    } else createSuccessResponse(res, updatedUser, 200, "Candidate Unblocked")
+    else createSuccessResponse(res, updatedUser, 200, "Candidate Unblocked")
   } else {
     res.status(400)
     throw new Error("Candidate Not Found")
